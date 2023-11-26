@@ -86,6 +86,9 @@ fi
 rm -f submission_${USERNAME}.zip
 rm -f $TEMP_FILE || true
 
+print_log "Cleaning up xv6 directory..."
+make clean > /dev/null 2>&1
+
 print_log "Process started: writing temporaries to $TEMP_FILE"
 
 # find modified files
