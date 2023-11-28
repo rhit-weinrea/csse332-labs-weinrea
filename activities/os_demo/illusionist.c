@@ -15,7 +15,7 @@ int
 main(int argc, char *argv[])
 {
 	int *iptr;
-	int i;
+  int i = 0;
 
   srand(time(NULL));
 
@@ -29,12 +29,12 @@ main(int argc, char *argv[])
 
 	printf("(%u): Allocated int at location %p\n", getpid(), iptr);
 
-	i = 0;
 	while(i < 10) {
-		*iptr = i++;
+		*iptr = (*iptr) + 1;
 		printf("(%u): Updated the pointer's value to %d\n", getpid(),
 		       *iptr);
 		sleep(1);
+    i++;
 	}
 
 	/* done */
