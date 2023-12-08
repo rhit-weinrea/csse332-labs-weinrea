@@ -62,7 +62,7 @@ print_usage() {
 
 # Grab config variables
 USERNAME=$1
-LAB_BRANCH=clab
+LAB_BRANCH=heapmm
 TEMP_FILE=/tmp/$(printf '%s' "names.txt" | md5sum | cut -d' ' -f1).txt
 
 # basic error checking
