@@ -1,6 +1,6 @@
 K=kernel
 U=user
-LAB=0
+LAB=cow
 
 OBJS = \
   $K/entry.o \
@@ -133,6 +133,9 @@ UPROGS=\
 	$U/_grind\
 	$U/_wc\
 	$U/_zombie\
+	$U/_fault\
+	$U/_cowtest\
+	$U/_simplefork\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
