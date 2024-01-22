@@ -434,6 +434,14 @@ wait(uint64 addr)
   }
 }
 
+// Use this function to isse the wfi instruction from a given hart
+// to make it go to sleep while waiting for the next interrupt to come in.
+static inline void
+__wfi(void)
+{
+  asm volatile("wfi");
+}
+
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
 // Scheduler never returns.  It loops, doing:
