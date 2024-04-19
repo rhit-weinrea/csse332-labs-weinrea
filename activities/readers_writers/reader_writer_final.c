@@ -4,8 +4,8 @@
 #include<semaphore.h>
 #include<unistd.h>
 
-#define NUM_READERS 1
-#define NUM_WRITERS 5
+#define NUM_READERS 50
+#define NUM_WRITERS 2
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t time_to_read = PTHREAD_COND_INITIALIZER;
