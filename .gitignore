@@ -176,3 +176,5 @@ tags
 
 # End of https://www.toptal.com/developers/gitignore/api/vim,c,make,macos,linux,emacs
 solution/
+.cache/
+compile_commands.json
