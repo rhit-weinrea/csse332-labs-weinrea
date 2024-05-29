@@ -21,7 +21,7 @@
  *
  */
 
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
   int fd[2];
   pid_t pid;
@@ -44,6 +44,7 @@ int main(int argc, char **argv)
 
   // Step 2:
   //  Now we can fork.
+  pid = fork();
   if(!pid) {
     // I am the child, I will be the WRITER
 
@@ -55,7 +56,7 @@ int main(int argc, char **argv)
     write(fd[1],    // the writing end of the pipe
         msg,        // the message to write
         strlen(msg) // the number of bytes to write
-        ); 
+        );
 
     // Step 4:
     //  Done writing, MUST close the writing end.
@@ -75,7 +76,7 @@ int main(int argc, char **argv)
     nbytes = read(fd[0], // where to read from
         readbuff,        // where to save the data read
         512);            // the maximum number of bytes to read
-                         
+
     if(nbytes) {
       printf("Parent (%d) read %d bytes from the child\n", getpid(), nbytes);
 
