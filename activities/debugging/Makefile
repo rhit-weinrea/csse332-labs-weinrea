@@ -1,5 +1,5 @@
 SRC = $(wildcard *c)
-BINS = pointer.bin demo.bin fork_demo.bin fork_list.bin
+BINS = pointer.bin demo.bin fork_demo.bin fork_list.bin advanced.bin
 
 CFLAGS += -ggdb -Werror
 
