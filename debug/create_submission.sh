@@ -89,7 +89,7 @@ rm -f $TEMP_FILE || true
 print_log "Process started: writing temporaries to $TEMP_FILE"
 
 # find modified files
-for i in `git --no-pager diff --name-only upstream/$LAB_BRANCH`
+for i in `git status --short . | sed s/^...//`
 do
     FNAME="$(find . -name $(basename $i) -print)"
     echo $FNAME >> $TEMP_FILE
