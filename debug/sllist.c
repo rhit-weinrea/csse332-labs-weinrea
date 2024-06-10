@@ -43,7 +43,6 @@ void add_tail(struct list_node *head, struct list_node *node)
     p = p->next;
   }
 
-  // add_head(p, node)
   node->next = p->next;
 }
 
