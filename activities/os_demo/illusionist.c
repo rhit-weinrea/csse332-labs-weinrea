@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <time.h>
 #include <sys/types.h>
 
 int
@@ -17,7 +16,7 @@ main(int argc, char *argv[])
 	int *iptr;
   int i = 0;
 
-  srand(time(NULL));
+  srand(getpid());
 
 	/* let's allocate and print an integer */
 	iptr = malloc(sizeof(int));
