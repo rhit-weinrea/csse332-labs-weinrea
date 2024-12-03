@@ -51,18 +51,19 @@ int main(int argc, char **argv) {
   x = 0xdeadbeef;
   printf("Test case for x = 0x%x\n", x);
   printf("Got: 0x%x, EXPECTED: 0x%x\n", get_first_byte_ptr(x), 0xde);
-  /* printf("Got: 0x%x, EXPECTED: 0x%x\n", get_first_byte_mask(x), 0xab); */
+  /* printf("Got: 0x%x, EXPECTED: 0x%x\n", get_first_byte_mask(x), 0xde); */
   puts("==================================================================");
 
   x = 3;
   printf("Test case for x = 0x%x\n", x);
   printf("Got: 0x%x, EXPECTED: 0x%x\n", get_first_byte_ptr(x), 0x0);
-  /* printf("Got: 0x%x, EXPECTED: 0x%x\n", get_first_byte_mask(x), 0xab); */
+  /* printf("Got: 0x%x, EXPECTED: 0x%x\n", get_first_byte_mask(x), 0x0); */
   puts("==================================================================");
 
   x = -1;
   printf("Test case for x = 0x%x\n", x);
   printf("Got: 0x%x, EXPECTED: 0x%x\n", get_first_byte_ptr(x), 0xff);
+  /* printf("Got: 0x%x, EXPECTED: 0x%x\n", get_first_byte_mask(x), 0xff); */
   puts("==================================================================");
 
   return 0;
