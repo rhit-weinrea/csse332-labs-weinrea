@@ -21,8 +21,8 @@ struct num_seq {
  *
  *  2) Given N and M, you need to create an int array on the HEAP that includes
  *    numbers ranging from N to M (inclusively). You can assume N is less than M.
- *    For example, if the inputs are "1" and "9", the int array should be
- *    {1,2,3,4,5,6,7,8,9}.
+ *    For example, if the inputs are the strings "1" and "10", the int array
+ *    should be {1,2,3,4,5,6,7,8,9,10}.
  *
  *  After creating and populating this array, you need to
  *  make the field "array" of the struct point to this new array.
@@ -47,8 +47,9 @@ struct num_seq {
  *
  * Don't call free in this function.
  *
- * YOU MAY NOT CALL OTHER FUNCTIONS EXCEPT FOR strlen(), sizeof(), memcpy()
- *
+ * YOU MAY NOT CALL OTHER FUNCTIONS EXCEPT FOR strlen(), sizeof(), memcpy(),
+ * malloc(), and strtol().
+ * 
  */
 struct num_seq* alloc_num_seq(const char *start, const char *end) {
   // Your code goes here
