@@ -3,7 +3,12 @@
 
 int main(int argc, char **argv)
 {
-  /* TODO: Insert your code here. */
+  if(argc != 2)
+  {
+	exit(1);
+  }
+  int ticks = atoi(argv[1]);
+  sleep(ticks);
 
   exit(0);
 }

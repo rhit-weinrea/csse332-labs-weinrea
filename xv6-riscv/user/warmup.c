@@ -141,16 +141,18 @@ void string_with_q(char *s1, char *s2, char **output)
 	if(*s1 == 'Q')
 	{
 		*output = str1;
-		break;
+		return;
 	}
+	s1++;
 	if(*s2 == 'Q')
 	{
 		*output = str2;
-		break;
+		return;
 	}
-	s1++;
+	
 	s2++;
   }
+  *output = 0;
   
 }
 
