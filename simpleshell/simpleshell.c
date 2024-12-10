@@ -8,15 +8,37 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <ctype.h>
+void setsighandler(int signum, void (*handler)(int)) {
+	  struct sigaction act;
+	  
+	    act.sa_handler = handler;
+	      sigemptyset(&act.sa_mask);
+	        act.sa_flags = SA_RESTART;
+		  sigaction(signum, &act, NULL);
+}
 
+void handle_sigchild(int ignored)
+{
+	int pid;
+	int status;
+	while((pid = waitpid(-1, &status, 0)) > 0)
+	{
+	  printf("Background command finished\n");	
+
+
+	}
+	wait(0);
+}
 
 int main() {
+  setsighandler(SIGCHLD, handle_sigchild);
   char command[82];
   char *parsed_command[2];
   //takes at most two input arguments
   // infinite loop but ^C quits
   while (1) {
     printf("SHELL%% ");
+    int bg = 0;
     fgets(command, 82, stdin);
     command[strlen(command) - 1] = '\0';//remove the \n
     int len_1;
@@ -31,7 +53,7 @@ int main() {
       char commandNum = parsed_command[0][0];
       char *ptr = command;
       //my stuff
-      int bg;
+      
       if(strncmp(command, "BG", 2) == 0)
       {
 	bg = 1;
@@ -47,27 +69,48 @@ int main() {
       }
       for(int i = 0; i < count; i++)
       {
+	pid_t waitpids;
       	int status = -1;
       	pid_t pid;
       	pid = fork();
-      	if(pid == 0)
-      	{
-		execl(parsed_command[0], parsed_command[0], NULL);
-      	} else{
-	
-		if(!bg)
+	int stat = -1;
+	if(pid == 0)
+	{
+		
+		if(bg)
 		{
-			waitpid(pid, NULL, 0);
+		waitpids = fork();
+		
+		if(waitpids == 0)
+		{
+		execlp(parsed_command[0], parsed_command[0], NULL);
+		exit(5);	
+		} else {
+							
+			//wait(&status);
+			//printf("Background Command Finished\n");
+			//exit(5);	
 		}
-      }
+		} else {
+			execlp(parsed_command[0], parsed_command[0], NULL);
+		}
+	}
+        else
+
+	{
+	  if(!bg)
+	  {
+		wait(&status);
+	  } 
+	  
+	}
+       	       
+
+      
       
       }
 
-      for(int i = 0; i < count; i++)
-      {
-	int status;
-	pid_t child_pid = wait(&status);
-      }
+      
       // leave this here, do not change it
       if(!strcmp(parsed_command[0], "quit") ||
           !strcmp(parsed_command[0], "exit")) {
