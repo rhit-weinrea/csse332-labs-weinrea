@@ -48,6 +48,7 @@ struct array_list {
 struct array_list *alloc_al(const char *name, int size)
 {
   struct array_list *al = malloc(sizeof(struct array_list));
+  al->array = malloc(size * sizeof(int));
   if(!al) {
     perror("PANIC: malloc failed, we didn't learn what to do here");
     exit(EXIT_FAILURE);

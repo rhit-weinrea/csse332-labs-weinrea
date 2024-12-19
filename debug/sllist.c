@@ -32,6 +32,7 @@ void init_node(struct list_node *node)
 void add_head(struct list_node *head, struct list_node *node)
 {
   node->next = head->next;
+  head->next = node;
 }
 
 // add at tail
@@ -44,6 +45,7 @@ void add_tail(struct list_node *head, struct list_node *node)
   }
 
   node->next = p->next;
+  p->next = node;
 }
 
 // delete a node
@@ -52,11 +54,14 @@ void del_node(struct list_node *head, struct list_node *node)
   struct list_node *p = head, *n = head->next;
 
   // find the node
-  while(n != node && n != head) {
-    p = n;
-    n = n->next;
+  while(p->next != node && p->next != head ) {
+    p = p->next;
   }
-
+  if(p->next == node)
+  {
+    p->next = node->next;
+    node->next - node;
+  }
   // empty!
   if(n == head) return;
 }
