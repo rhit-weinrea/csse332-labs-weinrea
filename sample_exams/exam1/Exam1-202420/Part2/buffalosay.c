@@ -35,6 +35,8 @@ int main(int argc, char** argv) {
 
 void asserthandshake(char* readbuffer, int* readpipe){
   int b = read(readpipe[0], readbuffer, 1000);
+  printf("passed in? %s\n", readbuffer);
+  int a = strcmp("secret handshake", readbuffer);
   if(b == -1){
     perror("Error reading message to print from pipe");
     exit(1);
