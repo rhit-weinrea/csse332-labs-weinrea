@@ -11,7 +11,7 @@
  * the kernel's page table.
  */
 pagetable_t kernel_pagetable;
-extern struct proc *myproc(void);
+
 
 extern char etext[];  // kernel.ld sets this to end of kernel code.
 
@@ -335,51 +335,29 @@ uvmcopy(pagetable_t old, pagetable_t new, uint64 sz)
   uvmunmap(new, 0, i / PGSIZE, 1);
   return -1;
 }
-void handle_page_fault(uint64 va) {
-  pte_t *pte;
-  uint64 pa;
-  uint flags;
-  char *mem;
+int handle_cow_page_fault(pagetable_t pagetable, uint64 va)
+{
+  pte_t *pte = walk(pagetable, va, 0);
 
-  // Align virtual address to page boundary
-  va = PGROUNDDOWN(va);
-
-  if ((pte = walk(myproc()->pagetable, va, 0)) == 0)
-    panic("handle_page_fault: page table entry does not exist");
-
-  if ((*pte & PTE_V) == 0 || (*pte & PTE_U) == 0)
-    goto kill;
-
-  if ((*pte & PTE_W) != 0) {
-    // Writable fault (not a CoW page) — should not happen
-    goto kill;
+  if (pte == 0 || (*pte & PTE_V) == 0 || (*pte & PTE_COW) == 0) {
+    return -1;
   }
 
-  // This is a CoW page
-  pa = PTE2PA(*pte);
-  flags = PTE_FLAGS(*pte);
+  uint64 pa = PTE2PA(*pte);
+  char *mem = kalloc();
+  if (mem == 0) {
+    return -1;
+  }
 
-  if ((mem = kalloc()) == 0)
-    panic("handle_page_fault: kalloc failed");
-
-  // Copy data from the old page
   memmove(mem, (char *)pa, PGSIZE);
-
-  // Update flags to make the new page writable
-  flags |= PTE_W;
-
-  // Unmap old read-only page and map the new writable page
-  uvmunmap(myproc()->pagetable, va, 1, 0);
-  if (mappages(myproc()->pagetable, va, PGSIZE, (uint64)mem, flags) != 0) {
-    kfree(mem);
-    panic("handle_page_fault: mappages failed");
-  }
+  uvmunmap(pagetable, PGROUNDDOWN(va), 1, 0);
   
-  return;
+  if (mappages(pagetable, PGROUNDDOWN(va), PGSIZE, (uint64)mem, PTE_FLAGS(*pte) & ~PTE_COW | PTE_W) != 0) {
+    kfree(mem);
+    return -1;
+  }
 
-kill:
-  printf("handle_page_fault: killing process %d\n", myproc()->pid);
-  myproc()->killed = 1;
+  return 0;
 }
 
 // mark a PTE invalid for user access.
