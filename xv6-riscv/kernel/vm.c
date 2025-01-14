@@ -352,7 +352,7 @@ int handle_cow_page_fault(pagetable_t pagetable, uint64 va)
   memmove(mem, (char *)pa, PGSIZE);
   uvmunmap(pagetable, PGROUNDDOWN(va), 1, 0);
   
-  if (mappages(pagetable, PGROUNDDOWN(va), PGSIZE, (uint64)mem, PTE_FLAGS(*pte) & ~PTE_RSW | PTE_W) != 0) {
+  if (mappages(pagetable, PGROUNDDOWN(va), PGSIZE, (uint64)mem, (PTE_FLAGS(*pte) & ~PTE_RSW) | PTE_W) != 0) {
     kfree(mem);
     return -1;
   }
