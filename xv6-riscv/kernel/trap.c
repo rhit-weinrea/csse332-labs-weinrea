@@ -10,6 +10,7 @@ struct spinlock tickslock;
 uint ticks;
 
 extern char trampoline[], uservec[], userret[];
+extern int handle_cow_page_fault(pagetable_t pagetable, uint64 va);
 
 // in kernelvec.S, calls kerneltrap().
 void kernelvec();
