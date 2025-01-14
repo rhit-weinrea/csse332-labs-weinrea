@@ -69,7 +69,8 @@ usertrap(void)
   } else if(r_scause() == 13 || r_scause() == 15) {
     uint64 va = r_stval(); 
 
-    if (handle_cow_page_fault(va) == 0) {
+   if (handle_cow_page_fault(myproc()->pagetable, va) == 0) {
+
 
     } else {
       printf("usertrap(): unexpected page fault at %p pid=%d\n", va, p->pid);
