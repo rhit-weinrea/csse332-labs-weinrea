@@ -89,8 +89,42 @@ char* descriptions[] = {"brute force","bubble","merge"};
 // parameters and calls the correct sorting function
 //
 // you can do it a different way but I think this is easiest
-void* thread_dispatch(void* data) {
+struct threads {
+  int* data;
+  int start;
+  int end;
+  int ind;
 
+};
+void* thread_dispatch(void* data) {
+  struct threads* td = (struct threads*)data;
+  struct timeval startt, stopt;
+  suseconds_t usecs_passed;
+  gettimeofday(&startt, NULL);
+  
+  int* data = td->data;
+  int start = td->start;
+  int end = td-> end;
+  int threadInd = td->ind;
+  int sw = threadInd % 3;
+  switch(sw){
+    case 0:
+      printf("Sorting indexes %d-%d with brute force\n", start, end);
+      BruteForceSort(data + start, end - start + 1);
+      break;
+    case 1:
+      printf("Sorting indexes %d-%d with bubble\n", start, end);
+      BubbleSort(data + start, end - start + 1);
+      break;
+    case 2:
+      printf("Sorting indexes %d-%d with merge\n", start, end);
+      MergeSort(data + start, end - start + 1);
+      break;
+  }
+  gettimeofday(&stopt, NULL);
+  usecs_passed = stopt.tv_usec - startt.tv_usec;
+  printf("Sorting indexes %d-%d with %s done in %ld usecs\n", start, end, descriptions[sw], usecs_passed);
+  pthread_exit(NULL);
 }
 
 int main(int argc, char** argv) {
