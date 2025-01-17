@@ -72,7 +72,7 @@ void* factor(void* arg){
     end = d.target;
   }
  
-  for (unsigned long long int i = d.num; i <= end; i= i+ dt.numThreads) {
+  for (unsigned long long int i = d.num; i <= end; i= i+ d.numThreads) {
     /* You'll want to keep this testing line in.  Otherwise it goes so
        fast it can be hard to detect your code is running in
        parallel. Also test with a large number (i.e. > 3000) */
