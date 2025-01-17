@@ -90,19 +90,18 @@ char* descriptions[] = {"brute force","bubble","merge"};
 //
 // you can do it a different way but I think this is easiest
 struct threads {
-  int* data;
   int start;
   int end;
   int ind;
-
+  int* datat;
 };
 void* thread_dispatch(void* data) {
-  struct threads* td = (struct threads*)data;
+  struct threads* td = (struct threads*)datat;
   struct timeval startt, stopt;
   suseconds_t usecs_passed;
   gettimeofday(&startt, NULL);
   
-  int* data = td->data;
+  int* datat = td->datat;
   int start = td->start;
   int end = td-> end;
   int threadInd = td->ind;
