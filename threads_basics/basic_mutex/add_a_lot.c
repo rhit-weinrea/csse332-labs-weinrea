@@ -9,26 +9,10 @@
  * You can use the provided makefile to compile your code.
  */
 
-int main(int argc, char **argv) {
-  total = 0;
-  pthread_t threads[NUM_THREADS];
-  pthread_mutex_init(&lock, 0);
+int total;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t lock;
 
-  int i;
-  for (i = 0; i < NUM_THREADS; i++) {
-    pthread_create(&threads[i], NULL, add10000, NULL);
-  }
-
-  for (i = 0; i < NUM_THREADS; i++) {
-    pthread_join(threads[i], NULL);
-  }
-
-  printf("Everything finished.  Final total %d\n", total);
-  pthread_mutex_destroy(&lock);
-
-
-  return 0;
-}
 void *add10000(void *arg) {
   for (int i = 0; i < 10000; i++) {
     // this area: critical section
@@ -43,12 +27,15 @@ int main(int argc, char **argv) {
   total = 0;
   pthread_t threads[NUM_THREADS];
   pthread_mutex_init(&lock, 0);
+  pthread_mutex_lock(&mutex);
 
   int i;
+
+  
   for (i = 0; i < NUM_THREADS; i++) {
     pthread_create(&threads[i], NULL, add10000, NULL);
   }
-
+  pthread_mutex_unlock(&mutex);
   for (i = 0; i < NUM_THREADS; i++) {
     pthread_join(threads[i], NULL);
   }
