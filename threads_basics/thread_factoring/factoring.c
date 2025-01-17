@@ -27,6 +27,7 @@ struct data {
   int num;
   unsigned long long int target;
   int numThreads;
+}
 };
 
 
