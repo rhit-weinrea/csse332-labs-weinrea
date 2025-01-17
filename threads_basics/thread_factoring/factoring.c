@@ -22,6 +22,13 @@
 #include <sys/wait.h>
 #include <pthread.h>
 
+void *factor(void *arg);
+struct data {
+  int num;
+  unsigned long long int target;
+  int numThreads;
+};
+
 
 int main(void) {
   unsigned long long int target;
