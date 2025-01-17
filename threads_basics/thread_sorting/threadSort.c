@@ -166,6 +166,19 @@ int main(int argc, char** argv) {
   }
 
   // create your threads here
+   // create your threads here
+  pthread_t threads[n];
+  for(int i = 0; i < n; i++){
+    pthread_create(&threads[i], NULL, thread_dispatch, (void*)&data_array[i*vals_per_thread]);
+  }
+  // wait for them to finish
+  long elapsed_times[MAX_N_SIZE];
+  for(int i = 0; i < n; i++){
+    void* elapsed_time;
+    pthread_join(threads[i], &elapsed_time);
+    elapsed_times[i] = (long)elapsed_time;
+
+  }
 
   // wait for them to finish
 
