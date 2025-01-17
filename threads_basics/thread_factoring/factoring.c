@@ -24,18 +24,31 @@
 
 
 int main(void) {
-  /* you can ignore the linter warning about this */
-  unsigned long long int target, i, start = 0;
+  unsigned long long int target;
   int numThreads;
+
+  /* you can ignore the linter warning about this */
   printf("Give a number to factor.\n");
   scanf("%llu", &target);
-
   printf("How man threads should I create?\n");
   scanf("%d", &numThreads);
   if (numThreads > 50 || numThreads < 1) {
     printf("Bad number of threads!\n");
     return 0;
   }
+  pthread_t threads[numThreads];
+  struct data threadData[numThreads];
+  for(int i = 0; i < numThreads; i++){
+    threadData[i].num = i + 1;
+    threadData[i].target = target;
+    threadData[i].numThreads = numThreads;
+    pthread_create(&threads[i], NULL, factor, &threadData[i]);  
+  }
+  for(int j = 0; j < numThreads; j++){
+    pthread_join(threads[j], NULL);
+  }
+  return 0;
+} 
 
   for (i = 2; i <= target/2; i = i + 1) {
     /* You'll want to keep this testing line in.  Otherwise it goes so
