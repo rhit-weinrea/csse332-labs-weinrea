@@ -65,7 +65,7 @@ int main(void) {
 } 
 
 void* factor(void* arg){
-  for (int i = 2; i <= target/2; i = i + 1) {
+  for (unsigned long long int i = 2; i <= target/2; i = i + 1) {
     /* You'll want to keep this testing line in.  Otherwise it goes so
        fast it can be hard to detect your code is running in
        parallel. Also test with a large number (i.e. > 3000) */
