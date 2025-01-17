@@ -64,23 +64,24 @@ int main(void) {
   return 0;
 } 
 
-void* factor(void* arg){
-
-     struct data dt = *(struct data *) arg;
-  int end = dt.num + (dt.target / dt.numThreads);
-  if(end > dt.target){
-    end = dt.target;
+void* factor(void* arg){  
+  
+  struct data d = *(struct data *) arg;
+  int end = d.num + (d.target / d.numThreads);
+  if(end > d.target){
+    end = d.target;
   }
-   
- for (unsigned long long int j = dt.num; j <= end; j = j + dt.numThreads) {
+ 
+  for (unsigned long long int i = d.num; i <= end; i= i+ dt.numThreads) {
     /* You'll want to keep this testing line in.  Otherwise it goes so
        fast it can be hard to detect your code is running in
        parallel. Also test with a large number (i.e. > 3000) */
-    printf("testing %llu\n", j);
+
+    printf("thread %d testing  %llu\n",d.num,  i);
     if (dt.target % i == 0) {
       printf("%llu is a factor\n", i);
     }
+   
   }
   return 0;
 }
-
