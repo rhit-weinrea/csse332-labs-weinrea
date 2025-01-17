@@ -24,7 +24,7 @@
 
 void *factor(void *arg);
 
-};
+
 
 struct data {
   int num;
@@ -64,7 +64,7 @@ int main(void) {
   return 0;
 } 
 
-
+void* factor(void* arg){
   for (i = 2; i <= target/2; i = i + 1) {
     /* You'll want to keep this testing line in.  Otherwise it goes so
        fast it can be hard to detect your code is running in
