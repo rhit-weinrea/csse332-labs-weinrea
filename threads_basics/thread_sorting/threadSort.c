@@ -93,15 +93,15 @@ struct threads {
   int start;
   int end;
   int ind;
-  int* datat;
+  int* tdata;
 };
 void* thread_dispatch(void* data) {
-  struct threads* td = (struct threads*)datat;
+  struct threads* td = (struct threads*)data;
   struct timeval startt, stopt;
   suseconds_t usecs_passed;
   gettimeofday(&startt, NULL);
   
-  int* datat = td->datat;
+  int* tdata = td->tdata;
   int start = td->start;
   int end = td-> end;
   int threadInd = td->ind;
