@@ -41,7 +41,8 @@ grep Red testout.txt
 If your code is right you should see an alternating Start/End
 
 */
-
+pthread_mutex_t red_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t blue_lock = PTHREAD_MUTEX_INITIALIZER;
 void redCommand() {
   pthread_mutex_lock(&red_lock);
   printf("Start: Red\n");
