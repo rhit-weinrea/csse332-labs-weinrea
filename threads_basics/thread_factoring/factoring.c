@@ -30,7 +30,7 @@ struct data {
   int num;
   unsigned long long int target;
   int numThreads;
-}
+};
 int main(void) {
   unsigned long long int target;
   int numThreads;
@@ -78,7 +78,7 @@ void* factor(void* arg){
        parallel. Also test with a large number (i.e. > 3000) */
 
     printf("thread %d testing  %llu\n",d.num,  i);
-    if (dt.target % i == 0) {
+    if (d.target % i == 0) {
       printf("%llu is a factor\n", i);
     }
    
