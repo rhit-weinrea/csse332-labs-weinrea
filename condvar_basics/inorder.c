@@ -7,9 +7,9 @@ int cur = 1;
 
 void *thread(void *arg)
 {
-
+   int *num = (int *)arg;
    printf("%d wants to enter the critical section\n", *num);
-  int *num = (int *)arg;
+  
   pthread_mutex_lock(&m);
 
   while(*num != cur){
