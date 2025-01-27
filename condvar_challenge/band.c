@@ -85,7 +85,7 @@ int kind = *((int*) kind_ptr);
     }
     else {
       guitarists++;
-      printf("%s %d arrived\n", names[kind], singers);
+      printf("%s %d arrived\n", names[kind], guitarists);
     }
     
 
