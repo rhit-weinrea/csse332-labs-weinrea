@@ -73,11 +73,21 @@ void* friend(void * kind_ptr) {
 int kind = *((int*) kind_ptr);
 
     pthread_mutex_lock(&mutex);
-    printf("%s arrived\n", names[kind]);
+   
 
-    if (kind == DRUM) drummers++;
-    else if (kind == SING) singers++;
-    else guitarists++;
+    if (kind == DRUM){
+      drummers++;
+      printf("%s %d arrived\n", names[kind], drummers;
+    }
+    else if (kind == SING)  {
+      singers++;
+      printf("%s %d arrived\n", names[kind], singers);
+    }
+    else {
+      guitarists++;
+      printf("%s %d arrived\n", names[kind], singers);
+    }
+    
 
     while (drummers < 1 || guitarists < 1 || singers < 1) {
         pthread_cond_wait(&band_ready, &mutex);
