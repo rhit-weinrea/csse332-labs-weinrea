@@ -77,7 +77,7 @@ int kind = *((int*) kind_ptr);
 
     if (kind == DRUM){
       drummers++;
-      printf("%s %d arrived\n", names[kind], drummers;
+      printf("%s %d arrived\n", names[kind], drummers);
     }
     else if (kind == SING)  {
       singers++;
