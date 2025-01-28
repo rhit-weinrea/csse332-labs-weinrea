@@ -69,44 +69,53 @@ int drummers = 0;
 int guitarists = 0;
 int singers = 0;
 
-void* friend(void * kind_ptr) {
-int kind = *((int*) kind_ptr);
+int players_ready = 0;
+
+void* friend(void* kind_ptr) {
+    int kind = *((int*) kind_ptr);
 
     pthread_mutex_lock(&mutex);
-   
 
-    if (kind == DRUM){
-      drummers++;
-      printf("%s %d arrived\n", names[kind], drummers);
+    if (kind == DRUM) {
+        drummers++;
+        printf("%s %d arrived\n", names[kind], drummers);
+    } else if (kind == SING) {
+        singers++;
+        printf("%s %d arrived\n", names[kind], singers);
+    } else {
+        guitarists++;
+        printf("%s %d arrived\n", names[kind], guitarists);
     }
-    else if (kind == SING)  {
-      singers++;
-      printf("%s %d arrived\n", names[kind], singers);
-    }
-    else {
-      guitarists++;
-      printf("%s %d arrived\n", names[kind], guitarists);
-    }
-    
 
-    while (drummers < 1 || guitarists < 1 || singers < 1) {
+    while (drummers < 1 || guitarists < 1 || singers < 1 || players_ready > 0) {
         pthread_cond_wait(&band_ready, &mutex);
     }
-
-    printf("%s playing\n", names[kind]);
-    pthread_mutex_unlock(&mutex);
-    
-    sleep(1);
-
-    pthread_mutex_lock(&mutex);
-    printf("%s finished playing\n", names[kind]);
 
     if (kind == DRUM) drummers--;
     else if (kind == SING) singers--;
     else guitarists--;
 
-    pthread_cond_broadcast(&band_ready);
-    
+    players_ready++;
+    printf("%s playing\n", names[kind]);
+
+    if (players_ready < 3) {
+        pthread_cond_wait(&band_ready, &mutex);
+    } else {
+        pthread_cond_broadcast(&band_ready);
+    }
+
+    pthread_mutex_unlock(&mutex);
+
+    sleep(1);
+
+    pthread_mutex_lock(&mutex);
+    printf("%s finished playing\n", names[kind]);
+
+    players_ready--;
+
+    if (players_ready == 0) {
+        pthread_cond_broadcast(&band_ready);
+    }
 
     pthread_mutex_unlock(&mutex);
 
