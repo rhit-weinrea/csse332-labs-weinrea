@@ -83,19 +83,13 @@ void* friend(void* kind_ptr) {
   else if (kind == SING) singers++;
   else if (kind == GUIT) guitarists++;
 
-  while (drummers < 1 || singers < 1 || guitarists < 1) {
+  while (drummers < 1 || singers < 1 || guitarists < 1 || is_band_playing) {
     pthread_cond_wait(&ready_to_form, &mutex);
   }
 
-  drummers--;
-  singers--;
-  guitarists--;
-
-  pthread_cond_signal(&ready_to_form);
-
-  while (is_band_playing) {
-    pthread_cond_wait(&band_playing, &mutex);
-  }
+  if (kind == DRUM) drummers--;
+  else if (kind == SING) singers--;
+  else if (kind == GUIT) guitarists--;
 
   is_band_playing = true;
 
@@ -111,13 +105,14 @@ void* friend(void* kind_ptr) {
   if (players_finished == 3) {
     players_finished = 0;
     is_band_playing = false;
-    pthread_cond_broadcast(&band_playing);
+    pthread_cond_broadcast(&ready_to_form);
   }
 
   pthread_mutex_unlock(&mutex);
 
   return NULL;
 }
+
 
 pthread_t friends[100];
 int friend_count = 0;
