@@ -91,7 +91,7 @@ green in northsouth direction
 #define EW 1;
 #define NS 2;
 
-int state;
+int status;
 
 int cars = 0;
 
