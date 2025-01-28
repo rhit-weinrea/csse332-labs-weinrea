@@ -105,10 +105,8 @@ int kind = *((int*) kind_ptr);
     else if (kind == SING) singers--;
     else guitarists--;
 
-    if (drummers == 0 && guitarists == 0 && singers == 0) {
-        printf("broadcasting that we are done\n");
-        pthread_cond_broadcast(&band_ready);
-    }
+    pthread_cond_broadcast(&band_ready);
+    
 
     pthread_mutex_unlock(&mutex);
 
