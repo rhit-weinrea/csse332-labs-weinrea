@@ -95,7 +95,7 @@ void *stoplight(void *arg)
     pthread_cond_signal(&EW_cars);
     
     sleep(1);
-    printf("yellow");
+    printf("yellow\n");
     status = YELLOW;
     
     pthread_mutex_lock(&mutex);
