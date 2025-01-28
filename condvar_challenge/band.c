@@ -74,7 +74,6 @@ pthread_cond_t band_done = PTHREAD_COND_INITIALIZER;
 // Ensures only one band is playing at a time
 int band_playing = 0;
 
-char* names[] = {"drummer", "singer", "guitarist"};
 
 // Thread function
 void* friend(void* kind_ptr) {
