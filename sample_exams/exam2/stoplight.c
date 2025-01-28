@@ -92,7 +92,7 @@ void *stoplight(void *arg)
     // we need to wait for the intersection to clear
     printf("green in eastwest direction\n");
     status = EW;
-    pthread_cond_signal(&EW_cars);
+    pthread_cond_broadcast(&EW_cars);
     pthread_mutex_unlock(&mutex);
   
     
@@ -109,7 +109,7 @@ void *stoplight(void *arg)
     // we need to wait for the intersection to clear
     printf("green in northsouth direction\n");
     status = NS;
-    pthread_cond_signal(&NS_cars);
+    pthread_cond_broadcast(&NS_cars);
     pthread_mutex_unlock(&mutex);
 
   }
