@@ -91,19 +91,28 @@ void* friend(void* kind_ptr) {
   else if (kind == SING) singers--;
   else if (kind == GUIT) guitarists--;
 
-  is_band_playing = true;
-
-  pthread_mutex_unlock(&mutex);
+  players_ready++;
+  if (players_ready == 3) {
+    is_band_playing = true;
+    pthread_cond_broadcast(&band_playing);
+  } else {
+    while (!is_band_playing) {
+      pthread_cond_wait(&band_playing, &mutex);
+    }
+  }
 
   printf("%s playing\n", names[kind]);
+  pthread_mutex_unlock(&mutex);
+
   sleep(1);
-  printf("%s finished playing\n", names[kind]);
 
   pthread_mutex_lock(&mutex);
 
+  printf("%s finished playing\n", names[kind]);
   players_finished++;
   if (players_finished == 3) {
     players_finished = 0;
+    players_ready = 0;
     is_band_playing = false;
     pthread_cond_broadcast(&ready_to_form);
   }
