@@ -19,18 +19,44 @@
   Solve this problem with mutexes/condition variables
  **/
 
-void *thread(void *arg)
-{
-  int *num = (int *) arg;
-  printf("%d wants to enter the critical section\n", *num);
+#define NUM_THREADS 6
 
-  printf("%d has entered the critical section\n", *num);
-  sleep(1);
-  printf("%d is finished with the critical section\n", *num);
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
-  return NULL;
+int in_critical_section = 0;
+int waiting_threads[NUM_THREADS] = {0};
+
+void *thread(void *arg) {
+    int *num = (int *)arg;
+    int priority = *num;
+    printf("%d wants to enter the critical section\n", priority);
+
+    pthread_mutex_lock(&mutex);
+
+    while (in_critical_section || waiting_threads[priority - 1] > 0) {
+        pthread_cond_wait(&cond, &mutex);
+    }
+
+    in_critical_section = 1;
+    waiting_threads[priority - 1] = 1;
+    printf("%d has entered the critical section\n", priority);
+
+    pthread_mutex_unlock(&mutex);
+
+    sleep(1);
+
+    pthread_mutex_lock(&mutex);
+    printf("%d is finished with the critical section\n", priority);
+
+    in_critical_section = 0;
+    waiting_threads[priority - 1] = 0;
+    pthread_cond_broadcast(&cond);
+
+    pthread_mutex_unlock(&mutex);
+
+    return NULL;
 }
-
 int
 main(int argc, char **argv)
 {
