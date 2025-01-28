@@ -62,66 +62,63 @@ char* names[] = {"drummer", "singer", "guitarist"};
 // because the code is similar, we'll just have one kind of thread
 // and we'll pass its kind as a parameter
 
+int drummers = 0;
+int singers = 0;
+int guitarists = 0;
+int ready_to_play = 0;
+
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t ready_to_form = PTHREAD_COND_INITIALIZER;
-pthread_cond_t band_playing = PTHREAD_COND_INITIALIZER;
+pthread_cond_t can_form_band = PTHREAD_COND_INITIALIZER;
+pthread_cond_t band_done = PTHREAD_COND_INITIALIZER;
 
-int drummers = 0, singers = 0, guitarists = 0;
-int players_finished = 0;
-bool is_band_playing = false;
+// Ensures only one band is playing at a time
+int band_playing = 0;
 
-int players_ready = 0;
+char* names[] = {"drummer", "singer", "guitarist"};
 
+// Thread function
 void* friend(void* kind_ptr) {
-  int kind = *((int*) kind_ptr);
-
+  int kind = *((int*)kind_ptr);
+  
   pthread_mutex_lock(&mutex);
-
   printf("%s arrived\n", names[kind]);
 
-  if (kind == DRUM) drummers++;
-  else if (kind == SING) singers++;
-  else if (kind == GUIT) guitarists++;
+  // Increment the count for the arriving friend type
+  if (kind == 0) drummers++;
+  else if (kind == 1) singers++;
+  else if (kind == 2) guitarists++;
 
-  while (drummers < 1 || singers < 1 || guitarists < 1 || is_band_playing) {
-    pthread_cond_wait(&ready_to_form, &mutex);
+  // Check if a band can be formed
+  while (drummers < 1 || singers < 1 || guitarists < 1 || band_playing) {
+    pthread_cond_wait(&can_form_band, &mutex);
   }
 
-  if (kind == DRUM) drummers--;
-  else if (kind == SING) singers--;
-  else if (kind == GUIT) guitarists--;
+  // Form a band: decrement counts and mark the band as playing
+  drummers--;
+  singers--;
+  guitarists--;
+  band_playing = 1;
+  ready_to_play = 3;  // Number of members still playing
 
-  players_ready++;
-  if (players_ready == 3) {
-    is_band_playing = true;
-    pthread_cond_broadcast(&band_playing);
-  } else {
-    while (!is_band_playing) {
-      pthread_cond_wait(&band_playing, &mutex);
-    }
-  }
-
-  printf("%s playing\n", names[kind]);
   pthread_mutex_unlock(&mutex);
 
+  // Simulate playing
+  printf("%s playing\n", names[kind]);
   sleep(1);
+  printf("%s finished playing\n", names[kind]);
 
   pthread_mutex_lock(&mutex);
+  ready_to_play--;
 
-  printf("%s finished playing\n", names[kind]);
-  players_finished++;
-  if (players_finished == 3) {
-    players_finished = 0;
-    players_ready = 0;
-    is_band_playing = false;
-    pthread_cond_broadcast(&ready_to_form);
+  // If all members of the current band are done, signal the next band
+  if (ready_to_play == 0) {
+    band_playing = 0;
+    pthread_cond_broadcast(&can_form_band);
   }
-
   pthread_mutex_unlock(&mutex);
 
   return NULL;
 }
-
 
 pthread_t friends[100];
 int friend_count = 0;
