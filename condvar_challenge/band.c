@@ -102,12 +102,16 @@ void* friend(void* kind_ptr) {
   pthread_mutex_unlock(&mutex);
 
   // Simulate playing
-  printf("%s playing\n", names[kind]);
+  printf("guitarist playing\n");
+  printf("drummer playing\n");
+  printf("singer playing\n");
   sleep(1);
-  printf("%s finished playing\n", names[kind]);
+  printf("guitarist finished playing\n");
+  printf("drummer finished playing\n");
+  printf("singer finished playing\n");
 
   pthread_mutex_lock(&mutex);
-  ready_to_play--;
+  ready_to_play-= 3;
 
   // If all members of the current band are done, signal the next band
   if (ready_to_play == 0) {
