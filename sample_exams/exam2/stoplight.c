@@ -39,6 +39,7 @@ void *north_south(void *arg)
   if(status == YELLOW && cars == 0){
     pthread_cond_signal(&light);
   }
+  pthread_mutex_unlock(&mutex);
 }
 
 
@@ -64,6 +65,7 @@ void *east_west(void *arg)
   if(status == YELLOW && cars == 0){
     pthread_cond_signal(&light);
   }
+  pthread_mutex_unlock(&mutex);
 }
 
 
