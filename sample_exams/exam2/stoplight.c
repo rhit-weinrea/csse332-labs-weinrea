@@ -88,25 +88,29 @@ void *stoplight(void *arg)
     while(cars > 0 && status == YELLOW){
       pthread_cond_wait(&light, &mutex);
     }
-    pthread_mutex_unlock(&mutex);
+    
     // we need to wait for the intersection to clear
     printf("green in eastwest direction\n");
     status = EW;
     pthread_cond_signal(&EW_cars);
+    pthread_mutex_unlock(&mutex);
+  
     
     sleep(1);
+    pthread_mutex_lock(&mutex);
     printf("yellow\n");
     status = YELLOW;
     
-    pthread_mutex_lock(&mutex);
+    
     while(cars > 0 && status == YELLOW){
       pthread_cond_wait(&light, &mutex);
     }
-    pthread_mutex_unlock(&mutex);
+    
     // we need to wait for the intersection to clear
     printf("green in northsouth direction\n");
-    pthread_cond_signal(&NS_cars);
     status = NS;
+    pthread_cond_signal(&NS_cars);
+    pthread_mutex_unlock(&mutex);
 
   }
 
