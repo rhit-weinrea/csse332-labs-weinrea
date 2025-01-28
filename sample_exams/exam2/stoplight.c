@@ -36,7 +36,7 @@ void *north_south(void *arg)
   printf("northsouth car leaving intersection\n");
   cars--;
   pthread_mutex_lock(&mutex);
-  if(cars == 0){
+  if(status == YELLOW && cars == 0){
     pthread_cond_signal(&light);
   }
 }
@@ -61,7 +61,7 @@ void *east_west(void *arg)
   printf("eastwest car leaving intersection\n");
    cars--;
   pthread_mutex_lock(&mutex);
-  if(cars == 0){
+  if(status == YELLOW && cars == 0){
     pthread_cond_signal(&light);
   }
 }
