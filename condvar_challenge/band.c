@@ -63,63 +63,60 @@ char* names[] = {"drummer", "singer", "guitarist"};
 // and we'll pass its kind as a parameter
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t band_ready = PTHREAD_COND_INITIALIZER;
+pthread_cond_t ready_to_form = PTHREAD_COND_INITIALIZER;
+pthread_cond_t band_playing = PTHREAD_COND_INITIALIZER;
 
-int drummers = 0;
-int guitarists = 0;
-int singers = 0;
+int drummers = 0, singers = 0, guitarists = 0;
+int players_finished = 0;
+bool is_band_playing = false;
 
 int players_ready = 0;
 
 void* friend(void* kind_ptr) {
-    int kind = *((int*) kind_ptr);
+  int kind = *((int*) kind_ptr);
 
-    pthread_mutex_lock(&mutex);
+  pthread_mutex_lock(&mutex);
 
-    if (kind == DRUM) {
-        drummers++;
-        printf("%s %d arrived\n", names[kind], drummers);
-    } else if (kind == SING) {
-        singers++;
-        printf("%s %d arrived\n", names[kind], singers);
-    } else {
-        guitarists++;
-        printf("%s %d arrived\n", names[kind], guitarists);
-    }
+  printf("%s arrived\n", names[kind]);
 
-    while (drummers < 1 || guitarists < 1 || singers < 1 || players_ready > 0) {
-        pthread_cond_wait(&band_ready, &mutex);
-    }
+  if (kind == DRUM) drummers++;
+  else if (kind == SING) singers++;
+  else if (kind == GUIT) guitarists++;
 
-    if (kind == DRUM) drummers--;
-    else if (kind == SING) singers--;
-    else guitarists--;
+  while (drummers < 1 || singers < 1 || guitarists < 1) {
+    pthread_cond_wait(&ready_to_form, &mutex);
+  }
 
-    players_ready++;
-    printf("%s playing\n", names[kind]);
+  drummers--;
+  singers--;
+  guitarists--;
 
-    if (players_ready < 3) {
-        pthread_cond_wait(&band_ready, &mutex);
-    } else {
-        pthread_cond_broadcast(&band_ready);
-    }
+  pthread_cond_signal(&ready_to_form);
 
-    pthread_mutex_unlock(&mutex);
+  while (is_band_playing) {
+    pthread_cond_wait(&band_playing, &mutex);
+  }
 
-    sleep(1);
+  is_band_playing = true;
 
-    pthread_mutex_lock(&mutex);
-    printf("%s finished playing\n", names[kind]);
+  pthread_mutex_unlock(&mutex);
 
-    players_ready--;
+  printf("%s playing\n", names[kind]);
+  sleep(1);
+  printf("%s finished playing\n", names[kind]);
 
-    if (players_ready == 0) {
-        pthread_cond_broadcast(&band_ready);
-    }
+  pthread_mutex_lock(&mutex);
 
-    pthread_mutex_unlock(&mutex);
+  players_finished++;
+  if (players_finished == 3) {
+    players_finished = 0;
+    is_band_playing = false;
+    pthread_cond_broadcast(&band_playing);
+  }
 
-    return NULL;
+  pthread_mutex_unlock(&mutex);
+
+  return NULL;
 }
 
 pthread_t friends[100];
