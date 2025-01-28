@@ -50,14 +50,14 @@ void *littleRedHenThread(void *arg) {
     numLoaves += NUM_LOAVES_PER_BATCH;
     printf("%-20s: A fresh batch of bread is ready.\n", name);
 
-    pthread_cond_broadcast(&breadAvailable);  // Wake up animals waiting for bread
+    pthread_cond_broadcast(&breadAvailable);  
 
     pthread_mutex_unlock(&kitchenMutex);
   }
 
   pthread_mutex_lock(&kitchenMutex);
   printf("%-20s: I'm fed up with feeding you lazy animals! No more bread!\n", name);
-  pthread_cond_broadcast(&breadAvailable);  // Wake up animals in case they are waiting
+  pthread_cond_broadcast(&breadAvailable); 
   pthread_mutex_unlock(&kitchenMutex);
 
   return NULL;
@@ -70,7 +70,7 @@ void *otherAnimalThread(void *arg) {
   while (numLoavesEaten < NUM_LOAVES_TO_EAT) {
     pthread_mutex_lock(&kitchenMutex);
 
-    while (numLoaves <= 0) {  // If there are no loaves, wait for Little Red Hen
+    while (numLoaves <= 0) {  
       printf("%-20s: Hey, Little Red Hen, make some more bread!\n", name);
       pthread_cond_wait(&breadAvailable, &kitchenMutex);
     }
