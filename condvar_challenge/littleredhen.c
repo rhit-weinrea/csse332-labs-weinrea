@@ -34,36 +34,58 @@
 
 int numLoaves;
 
+int numLoaves;
+pthread_mutex_t kitchenMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t breadAvailable = PTHREAD_COND_INITIALIZER;
+pthread_cond_t henFinishedBaking = PTHREAD_COND_INITIALIZER;
+
 void *littleRedHenThread(void *arg) {
   char *name = (char*)arg;
   int batch;
 
-  for (batch = 1; batch <= 6; batch++) {
-    sleep(2);  // just makes it obvious that it won't work without
-               // condition variables
-    numLoaves += 7;
+  for (batch = 1; batch <= NUM_BATCHES; batch++) {
+    sleep(2);  // Just makes it obvious that it won't work without condition variables
+    pthread_mutex_lock(&kitchenMutex);
+
+    numLoaves += NUM_LOAVES_PER_BATCH;
     printf("%-20s: A fresh batch of bread is ready.\n", name);
+
+    pthread_cond_broadcast(&breadAvailable);  // Wake up animals waiting for bread
+
+    pthread_mutex_unlock(&kitchenMutex);
   }
 
-  printf("%-20s: I'm fed up with feeding you lazy animals! "
-         "No more bread!\n", name);
+  pthread_mutex_lock(&kitchenMutex);
+  printf("%-20s: I'm fed up with feeding you lazy animals! No more bread!\n", name);
+  pthread_cond_broadcast(&breadAvailable);  // Wake up animals in case they are waiting
+  pthread_mutex_unlock(&kitchenMutex);
+
   return NULL;
 }
 
 void *otherAnimalThread(void *arg) {
   char *name = (char*)arg;
   int numLoavesEaten = 0;
+
   while (numLoavesEaten < NUM_LOAVES_TO_EAT) {
-    if (numLoaves <= 0) {
+    pthread_mutex_lock(&kitchenMutex);
+
+    while (numLoaves <= 0) {  // If there are no loaves, wait for Little Red Hen
       printf("%-20s: Hey, Little Red Hen, make some more bread!\n", name);
+      pthread_cond_wait(&breadAvailable, &kitchenMutex);
     }
+
     numLoaves--;
     printf("%-20s: Mmm, this loaf is delicious.\n", name);
     numLoavesEaten++;
+
+    pthread_mutex_unlock(&kitchenMutex);
+
     if (random() > random()) {  // Adds variety to output
       sleep(1);
     }
   }
+
   printf("%-20s: I've had my fill of bread. Thanks, Little Red Hen!\n", name);
   return NULL;
 }
