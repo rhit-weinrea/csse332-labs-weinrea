@@ -42,23 +42,29 @@ thread 4 decides to stay in the shower a little longer
 <would run forever but main quits>
 
  */
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+int waiting = 0;
 
 void *thread(void *arg)
 {
+  	 
   int num = *(int*)arg;
   printf("thread %d wants to use the shower\n", num);
+  waiting++;
+  pthread_mutex_lock(&mutex);
   // I reccommend you leave the above print statement outside of
   // any lock, otherwise a certian kind of bug will be less obvious
 
   printf("thread %d is using shower\n", num);
+  waiting--;
   while(1) {
 
     sleep(SHOWER_TIME);
-    // if(your check to see if another thread is waiting) {
-    //    printf("thread %d is finished with shower\n", num);
-    //    other code
-    //    break;
-    // }
+    if(waiting) {
+        printf("thread %d is finished with shower\n", num);
+        pthread_mutex_unlock(&mutex);
+        break;
+     }
 
     printf("thread %d decides to stay in the shower a little longer\n", num);
 

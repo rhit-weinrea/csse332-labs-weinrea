@@ -176,17 +176,20 @@ about this bug.
  */
 
 char nums[MAX_NUM];
-
+pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 void* sieve_for(long num) {
 
     printf("starting sieve for %ld\n", num);
+ 
     long current = num + num;
+   // pthread_mutex_lock(&m);
     while(current < MAX_NUM) {
         usleep(100); // a little wait to make the parallelism easier to notice
         if(nums[current] != 'C') printf("sieve %ld found composite %ld\n", num, current);
         nums[current] = 'C'; // C for composite
         current = current + num;
     }
+   //pthread_mutex_unlock(&m);
     printf("sieve for %ld finished\n", num);
     return NULL;
 }
@@ -201,12 +204,29 @@ int main(int argc, char **argv)
   for(int i = 2; i < MAX_NUM; i++) {
       nums[i] = 'P'; //mark all numbers as potentially prime
   }
+  for(int k = 0; k < NUM_THREADS; k++){
+  	pthread_create(&threads[k], NULL, sieve_for, params[k]);
 
-
+  }
+ 
   // these are put in parallel in PART 1
-  sieve_for(2);
-  sieve_for(3);
-  sieve_for(5);
+  //
+ for(int j = 1; j < NUM_THREADS; j++) {
+	     pthread_join(threads[j],NULL);
+ }
+ i = 2;
+ while(i < MAX_NUM) {
+	for(int a = 0; a < 3; a++) {
+		if(nums[i] == 'P'){
+		   pthread_create(&threads[a], NULL, sieve_for, i);
+		}
+	i++;		
+
+	}
+	 for(int j = 1; j < NUM_THREADS; j++) {
+	     pthread_join(threads[j],NULL);
+	 }
+ }
 
   // here's where you add your loop that starts batches of threads once other
   // threads finish when you do part 2

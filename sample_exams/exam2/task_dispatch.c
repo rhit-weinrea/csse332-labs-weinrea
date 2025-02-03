@@ -69,20 +69,40 @@ Example output:
 
 
 int job_to_do = 0;
+pthread_cond_t avail = PTHREAD_COND_INITIALIZER;
+pthread_cond_t taken = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
+int job_avail = 0;
+int job_waiting = 1;
 
 int get_job() {
-
+  while(!job_avail){
+    pthread_cond_wait(&avail, &m);
+  } 
+  pthread_mutex_lock(&m);
   // you'll need to do some work to ensure this is safe
   int my_job = job_to_do;
   job_to_do = 0;
+  job_avail = 0;
+  job_waiting--;
+  pthread_cond_signal(&taken);
+  pthread_mutex_unlock(&m);
   return my_job;
 
 }
 
 void assign_job(int job_num) {
-
+  job_avail = 1;
+  while(job_waiting){
+    pthread_cond_wait(&taken, &m);
+  }
+  pthread_mutex_lock(&m);
+  job_waiting++;
   // you'll need to do some work to ensure this is safe
   job_to_do = job_num;
+  pthread_cond_signal(&avail);
+  pthread_mutex_unlock(&m);
+  
 
 }
 
