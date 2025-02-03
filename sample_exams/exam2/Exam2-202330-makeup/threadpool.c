@@ -10,7 +10,7 @@
 
 const char *stack = "abcdefghijklmnopqrstuvwxyz123456789";
 int stackptr = 0;
-
+pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 char pop()
 {
   if(stackptr >= strlen(stack)) {
@@ -30,8 +30,16 @@ int is_empty()
 // TODO: Add any extra functions you need here
 void worker_thread(int num)
 {
-   printf("Thread %d processing request %c\n", num, pop());
-  sleep(1);
+    pthread_mutex_lock(&m);
+   while(!is_empty()){
+	char c = pop;
+	pthread_mutex_unlock(&m);
+        printf("Thread %d processing request %c\n", num, pop());
+	sleep(1);
+	pthread_mutex_lock(&m);
+   }
+   pthread_mutex_unlock(&m);
+  
 
 }
 int main(int argc, char **argv)
@@ -44,6 +52,7 @@ int main(int argc, char **argv)
 
 	pthread_create(&tid[i], NULL, worker_thread, i);
   }
+ 
   
   for(int i = 0; i < NUM_THREADS; i++)
   {
