@@ -28,11 +28,27 @@ int is_empty()
 }
 
 // TODO: Add any extra functions you need here
+void worker_thread(int num)
+{
+   printf("Thread %d processing request %c\n", num, pop());
+  sleep(1);
 
+}
 int main(int argc, char **argv)
 {
+  pthread_t tid[NUM_THREADS];
   /* TODO: YOUR IMPLEMENTATION GOES HERE */
+  for(int i = 0; i < NUM_THREADS; i++)
+  {
+	 printf("Worker thread %d started.\n", i);
 
+	pthread_create(&tid[i], NULL, worker_thread, i);
+  }
+  
+  for(int i = 0; i < NUM_THREADS; i++)
+  {
+	pthread_join(tid[i], NULL);
+  }
   /* DO NOT REMOVE THIS LINE */
   printf("****** Everything finished ******\n");
 }
