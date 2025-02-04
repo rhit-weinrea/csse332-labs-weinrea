@@ -5,6 +5,20 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+
+uint64 sys_thread_alloc(void)
+{
+  uint64 addr;
+  argaddr(0, &addr);
+  return thread_alloc((void*)addr);
+}
+uint64 sys_thread_free(void)
+{
+  uint64 addr;
+  argaddr(0, &addr);
+  return thread_free((void*)addr);
+}
+
 uint64 sys_spoon(void)
 {
 	  // obtain the argument from the stack, we need some special handling
