@@ -23,6 +23,8 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int spoon(void*);
+int thread_alloc(void*);
+int thread_free(void*);
 
 // ulib.c
 int stat(const char*, struct stat*);
