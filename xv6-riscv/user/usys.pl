@@ -37,3 +37,5 @@ entry("sbrk");
 entry("sleep");
 entry("uptime");
 entry("spoon");
+entry(thread_alloc);
+entry(thread_free);
