@@ -131,8 +131,8 @@ static uint64 (*syscalls[])(void) = {
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
 [SYS_spoon] sys_spoon,
-SYS_thread_alloc sys_thread_alloc,
-SYS_thread_free sys_thread_free,
+[SYS_thread_alloc] sys_thread_alloc,
+[SYS_thread_free] sys_thread_free,
 };
 
 void
