@@ -5,7 +5,13 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
-
+uint64 sys_spoon(void)
+{
+	  // obtain the argument from the stack, we need some special handling
+   uint64 addr;
+   argaddr(0, &addr);
+   return spoon((void*)addr);
+}
 uint64
 sys_exit(void)
 {
