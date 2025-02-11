@@ -12,6 +12,9 @@ struct proc proc[NPROC];
 
 struct proc *initproc;
 
+struct list_head runq;
+struct list_head_s pq;
+
 int nextpid = 1;
 struct spinlock pid_lock;
 
@@ -51,6 +54,7 @@ procinit(void)
   
   initlock(&pid_lock, "nextpid");
   initlock(&wait_lock, "wait_lock");
+  init_list_head(&pq.list);
   for(p = proc; p < &proc[NPROC]; p++) {
       initlock(&p->lock, "proc");
       p->state = UNUSED;
@@ -320,6 +324,7 @@ fork(void)
 
   acquire(&np->lock);
   np->state = RUNNABLE;
+  list_add_tail(&runq, &np->list);
   release(&np->lock);
 
   return pid;
@@ -452,6 +457,7 @@ __wfi(void)
 void
 scheduler(void)
 {
+  int runnables = 0;
   struct proc *p;
   struct cpu *c = mycpu();
   
@@ -459,10 +465,15 @@ scheduler(void)
   for(;;){
     // Avoid deadlock by ensuring that devices can interrupt.
     intr_on();
-
-    for(p = proc; p < &proc[NPROC]; p++) {
+    runnables = 0;
+    if(!list_empty(&runq)){
+    //for(p = proc; p < &proc[NPROC]; p++) {
+      struct list_head *top = runq.next;
+      list_del_init(top);
+      p = container_of(top, struct proc, list);
       acquire(&p->lock);
       if(p->state == RUNNABLE) {
+ 	runnables++;
         // Switch to chosen process.  It is the process's job
         // to release its lock and then reacquire it
         // before jumping back to us.
@@ -475,6 +486,9 @@ scheduler(void)
         c->proc = 0;
       }
       release(&p->lock);
+    } else {
+	    
+	__wfi();
     }
   }
 }
@@ -581,6 +595,7 @@ wakeup(void *chan)
       acquire(&p->lock);
       if(p->state == SLEEPING && p->chan == chan) {
         p->state = RUNNABLE;
+	list_add_tail(&runq, &p->list);
       }
       release(&p->lock);
     }
